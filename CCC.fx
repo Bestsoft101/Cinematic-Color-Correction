@@ -2,7 +2,6 @@
 #include "ReShade.fxh"
 
 #define BLOOM
-#define BLOOM_STRENGTH 0.15
 #define BLOOM_TRESHOLD 0.25
 #define BLOOM_LOD 16
 #define BLOOM_COLOR
@@ -16,11 +15,31 @@
 #define CROSSPROCESS
 
 #define VIGNETTE
-#define VIGNETTE_STRENGTH 0.60
 
 #define vec3 float3
 #define vec4 float4
 #define mix lerp
+
+uniform float BLOOM_STRENGTH <
+	ui_label = "Bloom Strength";
+	ui_type = "slider";
+	ui_min = 0.0f;
+	ui_max = 1.0f;
+> = 0.15f;
+
+uniform float VIGNETTE_STRENGTH <
+	ui_label = "Vignette Strength";
+	ui_type = "slider";
+	ui_min = 0.0f;
+	ui_max = 1.0f;
+> = 0.6f;
+
+uniform float GAMMA <
+	ui_label = "Gamma";
+	ui_type = "slider";
+	ui_min = 0.5f;
+	ui_max = 1.5f;
+> = 1.0f;
 
 texture2D BloomTexture {
 	Width = BUFFER_WIDTH;
@@ -186,6 +205,8 @@ vec4 Final(vec4 vpos : SV_Position, float2 texcoord : TexCoord) : SV_Target {
 	#ifdef TONEMAP
 	color = aces(color);
 	#endif
+	
+	color = pow(color, vec3(GAMMA, GAMMA, GAMMA));	
 	
 	return vec4(color, 1.0f);
 }
